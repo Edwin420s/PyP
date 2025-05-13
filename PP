@@ -1,0 +1,59 @@
+# covid_tracker.py
+# Author: Edwin Mwenda Mwiti
+# COVID-19 Global Data Tracker (One File Version)
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def main():
+    print("📥 Loading COVID-19 data...")
+    url = "https://covid.ourworldindata.org/data/owid-covid-data.csv"
+    df = pd.read_csv(url)
+
+    print("✅ Data loaded successfully!")
+    print("🔍 Previewing key columns:")
+    print(df[['location', 'date', 'total_cases', 'total_deaths']].head())
+
+    # 🌍 Focus on selected countries
+    countries = ['Kenya', 'United States', 'India', 'Brazil', 'Germany']
+    df_filtered = df[df['location'].isin(countries)]
+
+    # 🧽 Clean and convert
+    df_filtered['date'] = pd.to_datetime(df_filtered['date'])
+
+    # 📈 Total cases plot
+    plt.figure(figsize=(12, 6))
+    sns.lineplot(data=df_filtered, x='date', y='total_cases', hue='location')
+    plt.title("Total COVID-19 Cases Over Time")
+    plt.xlabel("Date")
+    plt.ylabel("Total Cases")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig("total_cases_plot.png")
+    plt.show()
+
+    # 📉 Total deaths plot
+    plt.figure(figsize=(12, 6))
+    sns.lineplot(data=df_filtered, x='date', y='total_deaths', hue='location')
+    plt.title("Total COVID-19 Deaths Over Time")
+    plt.xlabel("Date")
+    plt.ylabel("Total Deaths")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig("total_deaths_plot.png")
+    plt.show()
+
+    # 📊 Summary table
+    summary = df_filtered.groupby('location')[['total_cases', 'total_deaths']].max().reset_index()
+    print("\n📋 COVID-19 Summary Table:")
+    print(summary)
+
+    # 🧠 Insights
+    print("\n🔍 Insights:")
+    print("1. The United States had the highest number of cases and deaths among the selected countries.")
+    print("2. Kenya reported fewer cases and deaths, possibly due to testing/reporting limitations.")
+    print("3. India had a sharp rise during its second wave in 2021.")
+
+if __name__ == "__main__":
+    main()
